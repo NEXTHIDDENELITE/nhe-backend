@@ -3,414 +3,599 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KILLER PREMIUM DASHBOARD</title>
+    <title>Nexora Store | Premium Digital Assets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Orbitron', 'Segoe UI', Roboto, sans-serif;
-        }
-
-        body {
-            background: #030305;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* ব্যাকগ্রাউন্ড ভিডিওর সেটিংস */
-        #bg-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.5;
-        }
-
-        /* ভিডিওর ওপর সাই-ফাই গ্রিড ওভারলে */
-        .video-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(5, 5, 10, 0.8)), 
-                        radial-gradient(circle, transparent 40%, #000 100%);
-            z-index: -1;
-        }
-
-        /* টপ নেভিগেশন বার */
-        .top-nav-bar {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            display: flex;
-            z-index: 10;
-        }
-
-        .nav-link {
-            background: rgba(10, 10, 15, 0.6);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            color: #00e5ff;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .nav-link:hover {
-            background: #00e5ff;
-            color: #000;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* স্পিকার কন্ট্রোল বাটন */
-        .audio-control {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            background: rgba(10, 10, 15, 0.8);
-            border: 2px solid #ff003c;
-            color: #ff003c;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.3rem;
-            box-shadow: 0 0 15px rgba(255, 0, 60, 0.4);
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .audio-control:hover {
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 0 25px rgba(255, 0, 60, 0.8);
-        }
-
-        /* ড্যাশবোর্ড ফ্রেম */
-        .dashboard-panel {
-            background: rgba(6, 6, 9, 0.75);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            width: 440px;
-            border-radius: 24px;
-            padding: 40px 30px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 0 50px rgba(0, 229, 255, 0.1), inset 0 0 30px rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            margin-top: 20px;
-        }
-
-        .dashboard-panel::before, .dashboard-panel::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00e5ff;
-        }
-        .dashboard-panel::before { top: 15px; left: 15px; border-right: 0; border-bottom: 0; }
-        .dashboard-panel::after { bottom: 15px; right: 15px; border-left: 0; border-top: 0; }
-
-        /* OWNER OF NHE স্পিচ বাবল */
-        .speech-bubble {
-            position: relative;
-            background: rgba(255, 0, 60, 0.1);
-            border: 1px solid #ff003c;
-            color: #ff003c;
-            padding: 8px 18px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 0, 60, 0.3);
-            animation: floatText 2s ease-in-out infinite alternate;
-        }
-
-        .speech-bubble i.fa-crown {
-            color: #ffea00;
-            text-shadow: 0 0 10px #ffea00;
-        }
-
-        .speech-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 50%;
-            transform: translateX(-50%) rotate(45deg);
-            width: 10px;
-            height: 10px;
-            background: #060609;
-            border-right: 1px solid #ff003c;
-            border-bottom: 1px solid #ff003c;
-        }
-
-        @keyframes floatText {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-5px); }
-        }
-
-        /* প্রোফাইল ইমেজ */
-        .avatar-container {
-            width: 135px;
-            height: 135px;
-            margin: 0 auto 15px;
-            position: relative;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid #00e5ff;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
-        }
-
-        .avatar {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .avatar-container::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -150%;
-            width: 50%;
-            height: 200%;
-            background: linear-gradient(to right, transparent, rgba(0, 229, 255, 0.7), transparent);
-            transform: rotate(30deg);
-            animation: sweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        }
-
-        @keyframes sweep {
-            0% { left: -150%; }
-            50%, 100% { left: 150%; }
-        }
-
-        /* নাম ও লোকেশন */
-        .profile-name {
-            font-size: 2.8rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            background: linear-gradient(45deg, #fff, #00e5ff, #ff003c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #0a0f1a; color: #e2e8f0; }
+        .product-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .perspective-1000 { perspective: 1000px; }
         
-        .profile-location {
-            font-size: 0.85rem;
-            color: #888;
-            letter-spacing: 3px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-        .profile-location i { color: #ff003c; margin-right: 5px; }
+        /* Review Marquee */
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-50% - 12px)); } }
+        .animate-scroll { display: flex; width: max-content; animation: scroll 30s linear infinite; }
+        .animate-scroll:hover { animation-play-state: paused; cursor: pointer; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Hide Default Details Marker */
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
 
-        /* সাবটাইটেল */
-        .profile-subtitle {
-            font-size: 0.8rem;
-            color: #00e5ff;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 35px;
-            font-weight: bold;
-            text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+        /* Stacked Card Inner Slider Animation (For 4 Items) */
+        @keyframes stack-slide-4 {
+            0%, 20% { transform: translateX(0); }
+            25%, 45% { transform: translateX(-25%); }
+            50%, 70% { transform: translateX(-50%); }
+            75%, 95% { transform: translateX(-75%); }
+            100% { transform: translateX(0); }
         }
-
-        /* গ্লোয়িং ভিজিটর উইজেট */
-        .floating-visitor-badge {
-            position: absolute;
-            bottom: 25px;
-            right: 25px;
-            background: rgba(10, 10, 15, 0.8);
-            border: 1px solid rgba(0, 229, 255, 0.4);
-            padding: 10px 15px;
-            border-radius: 30px;
+        .animate-stack-slide-4 {
             display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
-            z-index: 10;
+            width: 400%;
+            animation: stack-slide-4 20s infinite cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .stack-item-4 { width: 25%; flex-shrink: 0; padding: 2.5rem; display: flex; flex-direction: column; }
 
-        .floating-visitor-badge i {
-            color: #00e5ff;
-            font-size: 1.1rem;
-            text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+        /* Floating Animations */
+        @keyframes float-badge-1 { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-8px) rotate(-4deg); } }
+        @keyframes float-badge-2 { 0%, 100% { transform: translateY(0) rotate(3deg); } 50% { transform: translateY(-6px) rotate(3deg); } }
+        .float-badge-1 { animation: float-badge-1 4s ease-in-out infinite; }
+        .float-badge-2 { animation: float-badge-2 5s ease-in-out infinite 1s; }
+
+        /* Orbit Animation Styles */
+        @keyframes orbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes orbit-reverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+        .orbit-container { animation: orbit 25s linear infinite; }
+        .orbit-icon { animation: orbit-reverse 25s linear infinite; }
+        .orbit-container-inner { animation: orbit-reverse 15s linear infinite; }
+        .orbit-icon-inner { animation: orbit 15s linear infinite; }
+
+        /* Glowing Background Animation */
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
         }
-
-        .floating-visitor-badge span {
-            font-size: 0.9rem;
-            font-weight: bold;
-            font-family: 'Orbitron', monospace;
-            color: #00e5ff;
-            text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
-            letter-spacing: 1px;
-        }
-
-        /* সোশ্যাল মিডিয়া সেকশন */
-        .social-icons-row {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 30px;
-        }
-
-        .icon-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-size: 1.5rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .icon-btn:hover { transform: translateY(-5px); }
-        .icon-btn.youtube:hover { background: #ff0000; border-color: #ff0000; box-shadow: 0 0 25px #ff0000; }
-        .icon-btn.discord:hover { background: #5865F2; border-color: #5865F2; box-shadow: 0 0 25px #5865F2; }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
     </style>
 </head>
-<body>
+<body class="antialiased relative overflow-x-hidden">
 
-    <video autoplay loop muted playsinline id="bg-video">
-        <source src="banner.mp4" type="video/mp4">
-    </video>
-    <div class="video-overlay"></div>
-
-    <nav class="top-nav-bar">
-        <a href="https://nexthiddenelite.github.io/NHE/" target="_blank" class="nav-link">
-            <i class="fa-solid fa-globe"></i> NHE Official
-        </a>
-    </nav>
-
-    <div class="audio-control" id="audio-toggle" onclick="toggleAudio()">
-        <i class="fa-solid fa-volume-xmark" id="audio-icon"></i>
+    <div class="fixed inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
+        <div class="absolute top-[10%] left-[10%] w-72 h-72 bg-blue-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob"></div>
+        <div class="absolute top-[30%] right-[10%] w-72 h-72 bg-emerald-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-[20%] left-[40%] w-72 h-72 bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob animation-delay-4000"></div>
     </div>
 
-    <div class="dashboard-panel">
-        
-        <div class="speech-bubble">
-            <i class="fa-solid fa-crown"></i> Owner of NHE <i class="fa-solid fa-crown"></i>
-        </div>
-        
-        <div class="avatar-container">
-            <img src="killertop.jpeg" alt="KILLER" class="avatar">
-        </div>
-
-        <h1 class="profile-name">KILLER</h1>
-        <div class="profile-location">
-            <i class="fa-solid fa-location-dot"></i> Bangladesh
-        </div>
-
-        <div class="profile-subtitle">
-            <i class="fa-solid fa-gamepad"></i> Gaming tools maker
-        </div>
-
-        <div class="social-icons-row">
-            <a href="https://www.youtube.com/@NextHiddenElite" target="_blank" class="icon-btn youtube" title="YouTube">
-                <i class="fa-brands fa-youtube"></i>
-            </a>
-            <a href="https://discord.gg/QWMpcrHSF" target="_blank" class="icon-btn discord" title="Discord">
-                <i class="fa-brands fa-discord"></i>
-            </a>
-        </div>
-
+    <div id="offer-banner" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-center py-2 text-sm font-medium relative z-50 transition-all duration-300">
+        <span class="mr-2">Limited Offer Is Live!🎁</span>UID BYPASS + LIB BYPASS + AI AIMBOT <strong>ONLY 6$</strong> 
+        <button onclick="document.getElementById('offer-banner').style.display='none'; document.getElementById('header-wrapper').classList.remove('top-8'); document.getElementById('header-wrapper').classList.add('top-0');" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white focus:outline-none">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
     </div>
 
-    <div class="floating-visitor-badge">
-        <i class="fa-solid fa-eye"></i>
-        <span id="total-count">0</span>
+    <div id="header-wrapper" class="w-full pt-6 px-4 sm:px-6 z-50 absolute top-8 left-0 transition-all duration-300">
+        <header class="max-w-6xl mx-auto bg-[#161722]/90 backdrop-blur-md border border-gray-800 rounded-2xl px-3 py-2.5 flex items-center justify-between shadow-2xl">
+<a href="/" class="flex items-center gap-3 text-lg font-bold text-white tracking-wide ml-2">
+    <img src="https://i.ibb.co.com/7xLYz5fp/vv.webp" alt="Nexora" class="h-10 w-auto rounded-lg"> 
+    Nexora
+</a>
+            <nav class="hidden lg:flex items-center gap-1 text-sm font-medium text-gray-400">
+                <a href="/" class="flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-[#212332] hover:text-white transition"><i class="fa-solid fa-house text-gray-400"></i> Home</a>
+                <a href="/category/SRC" class="flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-[#212332] hover:text-white transition"><i class="fa-solid fa-code text-gray-400"></i> SRC</a>
+                <a href="/category/Free" class="flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-[#212332] hover:text-white transition"><i class="fa-solid fa-box-open text-gray-400"></i> Free</a>
+                <a href="/category/AI Tools" class="flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-[#212332] hover:text-white transition text-emerald-400"><i class="fa-solid fa-robot text-emerald-400"></i> AI Tools</a>
+                <a href="/category/FreeFire Items" class="flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-[#212332] hover:text-white transition"><i class="fa-solid fa-gamepad text-gray-400"></i> FreeFire</a>
+                <a href="/category/Premium Apps" class="flex items-center gap-2 px-4 py-2.5 rounded-xl hover:bg-[#212332] hover:text-white transition"><i class="fa-solid fa-crown text-gray-400"></i> Premium Apps</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2 border border-gray-700 bg-[#212332] rounded-xl px-3 py-2 text-sm text-gray-300 hover:border-gray-500 transition">
+                    <i class="fa-solid fa-coins text-emerald-400 text-xs"></i>
+                    <select id="currencySelector" class="bg-transparent border-none outline-none cursor-pointer focus:ring-0 text-white font-bold">
+                        <option value="BDT" class="bg-gray-800 text-white">BDT</option>
+                        <option value="USDT" class="bg-gray-800 text-white">USDT</option>
+                        <option value="INR" class="bg-gray-800 text-white">INR</option>
+                    </select>
+                </div>
+                
+                
+                    <a href="/login" class="bg-emerald-400 hover:bg-emerald-500 text-gray-900 px-5 py-2.5 rounded-xl font-bold text-sm transition tracking-wide flex items-center gap-2 shadow-[0_0_15px_rgba(52,211,153,0.3)]">
+                        <i class="fa-regular fa-credit-card"></i> CLIENT AREA
+                    </a>
+                
+            </div>
+        </header>
+    </div>
+
+    
+
+        <section class="container mx-auto px-6 pt-40 pb-16 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-12">
+                <div class="w-full lg:w-1/2 text-left">
+                    <div class="inline-flex items-center gap-2 bg-blue-900/40 border border-blue-800 px-3 py-1 rounded-full text-xs font-bold text-blue-400 mb-6 uppercase tracking-wide">
+                        <span class="bg-blue-600 text-white px-2 py-0.5 rounded-full">ALL IN ONE</span> Sensi X Platform
+                    </div>
+                    
+                    <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-tight mb-6 tracking-tight">Premium tools at <br><span class="relative inline-block text-blue-500">90% off</span> — <br><span class="text-emerald-400">in seconds.</span></h1>
+                    
+                    <p class="text-gray-400 text-lg mb-8 max-w-lg">Sensi X gives you 50+ premium models (ChatGPT, CapCut, Claude, SEMRush) all in one platform. Instant access, safe bypasses, and 24/7 support.</p>
+                    
+                    <div class="space-y-2 text-sm font-medium text-gray-300 mb-8">
+                        <p><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Instant delivery to your email or panel</p>
+                        <p><i class="fa-solid fa-check text-emerald-500 mr-2"></i> Pay with bKash, Nagad, or bank transfer</p>
+                        <p><i class="fa-solid fa-check text-emerald-500 mr-2"></i> 100% Secure & Reliable Support</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-4">
+                        <a href="/category/Premium Apps" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2 inline-flex">Browse Products <i class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-1/2 flex justify-center relative h-[500px] items-center">
+                    <div class="absolute z-30 w-28 h-28 bg-[#161722] rounded-3xl shadow-2xl shadow-blue-900/50 border border-gray-700 flex items-center justify-center">
+                        <div class="text-5xl font-black text-white tracking-tighter">S<span class="text-blue-500">X</span></div>
+                    </div>
+
+                    <div class="absolute w-[360px] h-[360px] md:w-[450px] md:h-[450px] border border-gray-800 rounded-full orbit-container">
+                        <div class="absolute top-0 left-1/2 -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <img src="https://www.pngplay.com/wp-content/uploads/10/Garena-Free-Fire-Logo-PNG-HD-Images.png" class="w-7 h-7" alt="ChatGPT">
+                        </div>
+                        <div class="absolute top-[19%] left-[89%] -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <img src="https://freelogopng.com/images/all_img/1664284918capcut-icon-png.png" class="w-7 h-7" alt="CapCut">
+                        </div>
+                        <div class="absolute top-[69%] left-[98%] -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Claude-ai-icon.svg/960px-Claude-ai-icon.svg.png?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail&_=20250728014952" class="w-7 h-7" alt="Claude AI">
+                        </div>
+                        <div class="absolute top-[97%] left-[71%] -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center text-white text-xs"><i class="fa-solid fa-video"></i></div>
+                        </div>
+                        <div class="absolute top-[97%] left-[28%] -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <img src="https://www.freepnglogos.com/download/42622" class="w-7 h-7" alt="Envato Elements">
+                        </div>
+                        <div class="absolute top-[69%] left-[2%] -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <img src="https://paulstamatiou.com/gear/cursor-app-icon.png" class="w-7 h-7" alt="vidIQ">
+                        </div>
+                        <div class="absolute top-[19%] left-[11%] -mt-6 -ml-6 w-12 h-12 bg-gray-900 rounded-xl shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-gray-700 flex items-center justify-center orbit-icon">
+                            <i class="fa-solid fa-fire text-orange-500 text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="absolute w-[220px] h-[220px] md:w-[280px] md:h-[280px] border border-dashed border-gray-700 rounded-full orbit-container-inner z-10">
+                        <div class="absolute top-[14.6%] left-[85.3%] -mt-4 -ml-4 w-8 h-8 bg-gray-800 rounded-lg shadow-sm border border-gray-600 flex items-center justify-center orbit-icon-inner text-gray-400 text-sm"><i class="fa-solid fa-music"></i></div>
+                        <div class="absolute top-[85.3%] left-[85.3%] -mt-4 -ml-4 w-8 h-8 bg-gray-800 rounded-lg shadow-sm border border-gray-600 flex items-center justify-center orbit-icon-inner text-gray-400 text-sm"><i class="fa-solid fa-code"></i></div>
+                        <div class="absolute top-[85.3%] left-[14.6%] -mt-4 -ml-4 w-8 h-8 bg-gray-800 rounded-lg shadow-sm border border-gray-600 flex items-center justify-center orbit-icon-inner text-gray-400 text-sm"><i class="fa-solid fa-pen-nib"></i></div>
+                        <div class="absolute top-[14.6%] left-[14.6%] -mt-4 -ml-4 w-8 h-8 bg-gray-800 rounded-lg shadow-sm border border-gray-600 flex items-center justify-center orbit-icon-inner text-gray-400 text-sm"><i class="fa-solid fa-cloud"></i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="container mx-auto px-6 py-8 relative z-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
+                <a href="/category/AI Tools" class="bg-[#161e2c] border border-gray-800 hover:border-purple-500/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-lg">
+                    <div class="w-14 h-14 rounded-full bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition duration-300"><i class="fa-solid fa-robot"></i></div>
+                    <h3 class="text-white font-bold text-sm tracking-wide">AI Tools</h3>
+                </a>
+                <a href="/category/FreeFire Items" class="bg-[#161e2c] border border-gray-800 hover:border-emerald-500/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-lg">
+                    <div class="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition duration-300"><i class="fa-solid fa-crosshairs"></i></div>
+                    <h3 class="text-white font-bold text-sm tracking-wide">Gaming Panels</h3>
+                </a>
+                <a href="/category/Premium Apps" class="bg-[#161e2c] border border-gray-800 hover:border-blue-500/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-lg">
+                    <div class="w-14 h-14 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition duration-300"><i class="fa-solid fa-crown"></i></div>
+                    <h3 class="text-white font-bold text-sm tracking-wide">Premium Apps</h3>
+                </a>
+                <a href="/category/SRC" class="bg-[#161e2c] border border-gray-800 hover:border-orange-500/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center transition group shadow-lg">
+                    <div class="w-14 h-14 rounded-full bg-orange-500/10 text-orange-400 flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition duration-300"><i class="fa-solid fa-code"></i></div>
+                    <h3 class="text-white font-bold text-sm tracking-wide">Source Codes</h3>
+                </a>
+            </div>
+        </section>
+
+        <section class="py-24 mt-12 relative z-10 bg-[#0B1120] border-y border-gray-800 overflow-hidden flex flex-col md:flex-row items-center shadow-2xl shadow-blue-900/10">
+            <div class="container mx-auto px-6 flex flex-col lg:flex-row items-center justify-between gap-12 max-w-6xl">
+                <div class="w-full lg:w-5/12 text-center lg:text-left z-20">
+                    <div class="inline-block border border-blue-500/30 bg-blue-900/20 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest mb-6 shadow-sm">Verified & 100% Safe</div>
+                    
+                    <h2 class="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">Sensi X<br><span class="text-emerald-400">Pricelist</span></h2>
+                    
+                    <p class="text-gray-400 text-[15px] mb-8 leading-relaxed max-w-sm mx-auto lg:mx-0">Get the ultimate gaming advantage and premium SEO/AI tools. Explore our exclusive pricing for VIP panels, safe bypasses, and shared premium accounts.</p>
+                    
+                    <a href="/category/FreeFire Items" class="inline-flex bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3.5 px-8 rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition items-center gap-2 text-sm tracking-wide">View Full Catalog <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+
+                <div class="w-full lg:w-7/12 flex justify-center relative min-h-[520px] mt-12 lg:mt-0">
+                    <div class="relative w-[340px] h-[520px]">
+                        <div class="absolute -left-12 sm:-left-20 top-20 bg-white px-4 py-2 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-[11px] font-black text-gray-800 flex items-center gap-2 z-30 float-badge-1 border border-gray-100">
+                            <div class="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center"><i class="fa-solid fa-lock text-blue-600 text-[10px]"></i></div> 100% Anti-Ban
+                        </div>
+                        <div class="absolute -right-6 sm:-right-12 top-10 bg-white px-4 py-2 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-[11px] font-black text-gray-800 flex items-center gap-2 z-30 float-badge-2 border border-gray-100">
+                            <div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center"><i class="fa-solid fa-bolt text-emerald-600 text-[10px]"></i></div> Instant Delivery
+                        </div>
+                        <div class="absolute -left-4 sm:-left-16 bottom-24 bg-white px-4 py-2 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-[11px] font-black text-gray-800 flex items-center gap-2 z-30 float-badge-1 border border-gray-100" style="animation-delay: 2s;">
+                            <div class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center"><i class="fa-solid fa-star text-purple-600 text-[10px]"></i></div> Premium Support
+                        </div>
+
+                        <div class="absolute -left-8 top-12 z-20 text-yellow-400 text-lg animate-pulse"><i class="fa-solid fa-sparkles"></i></div>
+                        <div class="absolute right-0 top-32 z-20 text-blue-400 text-sm animate-pulse"><i class="fa-regular fa-star"></i></div>
+
+                        <div class="absolute inset-0 bg-[#e2e8f0]/40 backdrop-blur-md rounded-[32px] transform origin-bottom -rotate-[8deg] -translate-x-12 translate-y-4 scale-[0.85] shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/10 z-0 transition-transform"></div>
+                        <div class="absolute inset-0 bg-[#e2e8f0]/40 backdrop-blur-md rounded-[32px] transform origin-bottom rotate-[8deg] translate-x-12 translate-y-4 scale-[0.85] shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/10 z-0 transition-transform"></div>
+                        <div class="absolute inset-0 bg-white/60 backdrop-blur-md rounded-[32px] transform origin-bottom -rotate-[4deg] -translate-x-6 translate-y-2 scale-[0.92] shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-white/30 z-10 transition-transform"></div>
+                        <div class="absolute inset-0 bg-white/60 backdrop-blur-md rounded-[32px] transform origin-bottom rotate-[4deg] translate-x-6 translate-y-2 scale-[0.92] shadow-[0_15px_40px_rgba(0,0,0,0.6)] border border-white/30 z-10 transition-transform"></div>
+
+                        <div class="absolute inset-0 bg-white rounded-[32px] shadow-[0_30px_60px_rgba(0,0,0,0.8)] border border-gray-200 overflow-hidden z-20 flex flex-col">
+                            
+                            <div class="animate-stack-slide-4 h-full">
+                                
+                                <div class="stack-item-4">
+                                    <div class="w-16 h-16 rounded-2xl bg-[#ECFDF5] flex items-center justify-center mb-6 shadow-sm border border-emerald-100">
+                                        <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white text-lg shadow-inner"><i class="fa-solid fa-crosshairs"></i></div>
+                                    </div>
+                                    <h3 class="text-[24px] font-black text-[#111827] leading-none mb-3">Sensi VIP Panel</h3>
+                                    <p class="text-[13px] font-bold text-gray-600 mb-5 tracking-wide flex items-center gap-1"><i class="fa-solid fa-sparkles text-yellow-400 text-sm"></i> Features:</p>
+                                    <ul class="space-y-3 text-[13px] font-medium text-gray-600 mb-6">
+                                        <li class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-check"></i></div> Full Safe & Approval</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-bullseye text-red-500 w-4 text-center"></i> AI Aimbot & 99% Headshot</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-eye text-blue-500 w-4 text-center"></i> ESP Line Location</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-person-dress text-pink-500 w-4 text-center"></i> Female Fix & Sniper Scope</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-window-restore text-gray-500 w-4 text-center"></i> Internal & External Support</li>
+                                        <li class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-check"></i></div> Instant Delivery via Email</li>
+                                    </ul>
+                                    <div class="flex items-center justify-between mt-auto border-t border-gray-100 pt-5">
+                                        <div class="text-[28px] font-black text-[#111827] tracking-tight flex items-baseline">
+                                            <span class="price-display" data-base-price="600">৳600</span>
+                                            <span class="text-xs font-bold text-gray-400 ml-1">/mo</span>
+                                        </div>
+                                        <a href="/login" class="bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold py-3 px-5 rounded-xl text-xs transition shadow-lg shadow-blue-500/30 tracking-wide">Get Now &rarr;</a>
+                                    </div>
+                                </div>
+
+                                <div class="stack-item-4">
+                                    <div class="w-16 h-16 rounded-2xl bg-[#F0F4FF] flex items-center justify-center mb-6 shadow-sm border border-blue-100">
+                                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-lg shadow-inner"><i class="fa-solid fa-shield-halved"></i></div>
+                                    </div>
+                                    <h3 class="text-[24px] font-black text-[#111827] leading-none mb-3">PC Emulator Bypass</h3>
+                                    <p class="text-[13px] font-bold text-gray-600 mb-5 tracking-wide flex items-center gap-1"><i class="fa-solid fa-sparkles text-yellow-400 text-sm"></i> Features:</p>
+                                    <ul class="space-y-3 text-[13px] font-medium text-gray-600 mb-6">
+                                        <li class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-check"></i></div> UID Bypass Protection</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-rocket text-blue-500 w-4 text-center"></i> Normal Emulator Bypass</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-laptop text-gray-700 w-4 text-center"></i> 1-Click PC Remove</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-500 w-4 text-center"></i> Zero Matchmaking Ban</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-hammer text-gray-500 w-4 text-center"></i> 100% Safe & Secure</li>
+                                        <li class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-check"></i></div> Instant Access</li>
+                                    </ul>
+                                    <div class="flex items-center justify-between mt-auto border-t border-gray-100 pt-5">
+                                        <div class="text-[28px] font-black text-[#111827] tracking-tight flex items-baseline">
+                                            <span class="price-display" data-base-price="800">৳800</span>
+                                            <span class="text-xs font-bold text-gray-400 ml-1">/mo</span>
+                                        </div>
+                                        <a href="/login" class="bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold py-3 px-5 rounded-xl text-xs transition shadow-lg shadow-blue-500/30 tracking-wide">Get Now &rarr;</a>
+                                    </div>
+                                </div>
+
+                                <div class="stack-item-4">
+                                    <div class="w-16 h-16 rounded-2xl bg-[#FFFBEB] flex items-center justify-center mb-6 shadow-sm border border-yellow-100">
+                                        <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-white text-lg shadow-inner"><i class="fa-solid fa-robot"></i></div>
+                                    </div>
+                                    <h3 class="text-[24px] font-black text-[#111827] leading-none mb-3">AI Tools Share</h3>
+                                    <p class="text-[13px] font-bold text-gray-600 mb-5 tracking-wide flex items-center gap-1"><i class="fa-solid fa-sparkles text-yellow-400 text-sm"></i> Features:</p>
+                                    <ul class="space-y-3 text-[13px] font-medium text-gray-600 mb-6">
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-rocket text-blue-500 w-4 text-center"></i> ChatGPT Plus & Gemini</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-bolt text-yellow-500 w-4 text-center"></i> Grok AI & Perplexity</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-image text-pink-500 w-4 text-center"></i> Canva Pro Included</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-laptop text-gray-700 w-4 text-center"></i> Multi-device access</li>
+                                        <li class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-check"></i></div> Instant access after purchase</li>
+                                    </ul>
+                                    <div class="flex items-center justify-between mt-auto border-t border-gray-100 pt-5">
+                                        <div class="text-[28px] font-black text-[#111827] tracking-tight flex items-baseline">
+                                            <span class="price-display" data-base-price="2000">৳2000</span>
+                                            <span class="text-xs font-bold text-gray-400 ml-1">/mo</span>
+                                        </div>
+                                        <a href="/login" class="bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold py-3 px-5 rounded-xl text-xs transition shadow-lg shadow-blue-500/30 tracking-wide">Get Now &rarr;</a>
+                                    </div>
+                                </div>
+
+                                <div class="stack-item-4">
+                                    <div class="w-16 h-16 rounded-2xl bg-[#F3F4F6] flex items-center justify-center mb-6 shadow-sm border border-gray-200">
+                                        <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white text-lg shadow-inner"><i class="fa-solid fa-video"></i></div>
+                                    </div>
+                                    <h3 class="text-[24px] font-black text-[#111827] leading-none mb-3">Premium Editors</h3>
+                                    <p class="text-[13px] font-bold text-gray-600 mb-5 tracking-wide flex items-center gap-1"><i class="fa-solid fa-sparkles text-yellow-400 text-sm"></i> Features:</p>
+                                    <ul class="space-y-3 text-[13px] font-medium text-gray-600 mb-6">
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-rocket text-blue-500 w-4 text-center"></i> Capcut PC & Mobile Pro</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-film text-purple-500 w-4 text-center"></i> Filmora Premium</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-image text-pink-500 w-4 text-center"></i> Picsart & Canva Pro</li>
+                                        <li class="flex items-center gap-2"><i class="fa-solid fa-laptop text-gray-700 w-4 text-center"></i> Up to 2 devices allowed</li>
+                                        <li class="flex items-center gap-2"><div class="w-4 h-4 rounded bg-emerald-500 flex items-center justify-center text-white text-[10px]"><i class="fa-solid fa-check"></i></div> Instant access via email</li>
+                                    </ul>
+                                    <div class="flex items-center justify-between mt-auto border-t border-gray-100 pt-5">
+                                        <div class="text-[28px] font-black text-[#111827] tracking-tight flex items-baseline">
+                                            <span class="price-display" data-base-price="500">৳500</span>
+                                            <span class="text-xs font-bold text-gray-400 ml-1">/mo</span>
+                                        </div>
+                                        <a href="/login" class="bg-[#2563EB] hover:bg-blue-700 text-white font-extrabold py-3 px-5 rounded-xl text-xs transition shadow-lg shadow-blue-500/30 tracking-wide">Get Now &rarr;</a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="absolute -bottom-8 left-0 w-full flex justify-center items-center gap-2 z-30">
+                            <div class="w-6 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+                            <div class="w-1.5 h-1.5 bg-gray-500 rounded-full"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+
+        <section class="py-24 relative z-10 bg-[#0B1120] border-y border-gray-800">
+            <div class="container mx-auto px-6 max-w-4xl">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-black text-white mb-4">Frequently Asked Questions</h2>
+                    <p class="text-gray-400 text-lg">Find answers to all your questions regarding our panels, bypasses, and premium tools right here.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <details class="group bg-[#161e2c] border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500/50 transition duration-300">
+                        <summary class="flex items-center justify-between p-6 cursor-pointer select-none">
+                            <h3 class="text-lg font-bold text-white">Why are our Panel & Bypass the best? Are there any ban issues?</h3>
+                            <div class="text-emerald-500 group-open:rotate-90 transition-transform duration-300 text-xl"><i class="fa-solid fa-plus"></i></div>
+                        </summary>
+                        <div class="px-6 pb-6 pt-2 text-gray-400 leading-relaxed border-t border-gray-800 mt-2">
+                            Not at all! Our Sensi X tools are 100% safe and fully anti-ban protected. There are no ID bans, blacklists, or matchmaking issues. We use the most advanced anti-cheat bypass security layers to ensure your account remains completely safe.
+                        </div>
+                    </details>
+                    
+                    <details class="group bg-[#161e2c] border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500/50 transition duration-300">
+                        <summary class="flex items-center justify-between p-6 cursor-pointer select-none">
+                            <h3 class="text-lg font-bold text-white">Is the setup process difficult?</h3>
+                            <div class="text-emerald-500 group-open:rotate-90 transition-transform duration-300 text-xl"><i class="fa-solid fa-plus"></i></div>
+                        </summary>
+                        <div class="px-6 pb-6 pt-2 text-gray-400 leading-relaxed border-t border-gray-800 mt-2">
+                            The setup is incredibly simple and easy! Our software supports 1-click installation without any complex hassles. We also provide detailed tutorial videos so anyone can set it up effortlessly.
+                        </div>
+                    </details>
+
+                    <details class="group bg-[#161e2c] border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500/50 transition duration-300">
+                        <summary class="flex items-center justify-between p-6 cursor-pointer select-none">
+                            <h3 class="text-lg font-bold text-white">How is the customer support? What if I face a problem?</h3>
+                            <div class="text-emerald-500 group-open:rotate-90 transition-transform duration-300 text-xl"><i class="fa-solid fa-plus"></i></div>
+                        </summary>
+                        <div class="px-6 pb-6 pt-2 text-gray-400 leading-relaxed border-t border-gray-800 mt-2">
+                            We have a 24/7 dedicated support team. We provide live assistance for any problems or technical issues you might face. You can directly contact us via Discord, WhatsApp, or Telegram.
+                        </div>
+                    </details>
+                    
+                    <details class="group bg-[#161e2c] border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500/50 transition duration-300">
+                        <summary class="flex items-center justify-between p-6 cursor-pointer select-none">
+                            <h3 class="text-lg font-bold text-white">Can I get a refund?</h3>
+                            <div class="text-emerald-500 group-open:rotate-90 transition-transform duration-300 text-xl"><i class="fa-solid fa-plus"></i></div>
+                        </summary>
+                        <div class="px-6 pb-6 pt-2 text-gray-400 leading-relaxed border-t border-gray-800 mt-2">
+                            Yes, absolutely! If you feel the product isn't good or face any technical issues within 1 day of use, we will provide a full refund. No questions asked!
+                        </div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+<section class="py-20 relative z-10 bg-[#0a0f1a]">
+            <div class="container mx-auto px-6 max-w-6xl text-center">
+                <h2 class="text-4xl font-black text-white mb-4">Join Our Community</h2>
+                <p class="text-gray-400 mb-12 text-lg">Stay updated, get 24/7 priority support, and connect with thousands of users worldwide.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="https://discord.gg/wEMyBdUtKB" target="_blank" class="bg-[#5865F2]/10 border border-[#5865F2]/30 hover:border-[#5865F2] hover:bg-[#5865F2]/20 p-8 rounded-3xl transition duration-300 group flex flex-col items-center shadow-lg hover:shadow-[#5865F2]/20">
+                        <i class="fa-brands fa-discord text-6xl text-[#5865F2] mb-4 group-hover:scale-110 transition"></i>
+                        <h3 class="text-2xl font-bold text-white mb-2">Discord Server</h3>
+                        <p class="text-sm text-gray-400">Join our active community</p>
+                    </a>
+
+                    <a href="https://discord.gg/wEMyBdUtKB" target="_blank" class="bg-[#0088cc]/10 border border-[#0088cc]/30 hover:border-[#0088cc] hover:bg-[#0088cc]/20 p-8 rounded-3xl transition duration-300 group flex flex-col items-center shadow-lg hover:shadow-[#0088cc]/20">
+                        <i class="fa-brands fa-telegram text-6xl text-[#0088cc] mb-4 group-hover:scale-110 transition"></i>
+                        <h3 class="text-2xl font-bold text-white mb-2">Telegram Channel</h3>
+                        <p class="text-sm text-gray-400">Get instant fresh updates</p>
+                    </a>
+
+                    <a href="https://discord.gg/wEMyBdUtKB" target="_blank" class="bg-[#25D366]/10 border border-[#25D366]/30 hover:border-[#25D366] hover:bg-[#25D366]/20 p-8 rounded-3xl transition duration-300 group flex flex-col items-center shadow-lg hover:shadow-[#25D366]/20">
+                        <i class="fa-brands fa-whatsapp text-6xl text-[#25D366] mb-4 group-hover:scale-110 transition"></i>
+                        <h3 class="text-2xl font-bold text-white mb-2">WhatsApp Help</h3>
+                        <p class="text-sm text-gray-400">Direct 24/7 support line</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 relative z-10 bg-gradient-to-b from-[#0a0f1a] to-[#0B1120]">
+            <div class="container mx-auto px-6 max-w-5xl">
+                <div class="bg-gradient-to-r from-blue-900/40 to-emerald-900/40 border border-blue-500/30 rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-2xl shadow-blue-900/20">
+                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl"></div>
+                    
+                    <div class="w-20 h-20 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-6 border border-blue-400/50">
+                        <i class="fa-solid fa-hand-holding-dollar text-4xl text-emerald-400"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white mb-4 tracking-wide">100% Satisfaction & Refund Policy</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
+                        If you experience any poor performance or technical issues within 1 day of using our tools, panel, or bypass, we will issue an <span class="text-emerald-400 font-bold border-b border-emerald-400">Instant Refund</span>. No hassle, no questions asked!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 border-y border-gray-800 relative z-10 bg-[#0a0f1a]/80 backdrop-blur-sm">
+            <div class="container mx-auto px-6 mb-12 flex justify-between items-end">
+                <div><h2 class="text-3xl font-bold text-white mb-2">Loved by creators worldwide</h2></div>
+                
+                    <a href="/login" class="bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-6 py-3 rounded-xl font-bold flex items-center gap-2 transition"><i class="fa-solid fa-lock text-sm"></i> Login to Review</a>
+                
+            </div>
+            <div class="relative w-full flex no-scrollbar" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+                <div class="animate-scroll gap-6 px-6">
+                    
+                        
+                            <div class="w-[450px] p-8 flex-shrink-0 text-center text-gray-500 border border-dashed border-gray-700 rounded-2xl">No reviews yet.</div>
+                        
+                    
+                        
+                            <div class="w-[450px] p-8 flex-shrink-0 text-center text-gray-500 border border-dashed border-gray-700 rounded-2xl">No reviews yet.</div>
+                        
+                    
+                </div>
+            </div>
+        </section>
+
+        <section class="py-16 border-b border-gray-800 relative z-10 bg-[#0a0f1a]/80 backdrop-blur-sm">
+            <div class="container mx-auto px-4">
+                <div class="relative max-w-5xl mx-auto">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-emerald-600/20 blur-2xl rounded-[3rem] opacity-60"></div>
+                    
+                    <div class="bg-[#0B1120]/90 backdrop-blur-xl border border-gray-700/50 rounded-[2rem] p-8 md:p-12 relative z-10 shadow-2xl">
+                        
+                        <div class="flex flex-col items-center text-center mb-10">
+                            <div class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-5 shadow-lg shadow-blue-500/20">
+                                <i class="fa-solid fa-shield-halved text-2xl text-white"></i>
+                            </div>
+                            <h2 class="text-3xl font-black text-white tracking-wide uppercase">100% Secure <span class="text-blue-400">Checkout</span></h2>
+                            <p class="text-gray-400 text-sm mt-3 max-w-md mx-auto">We support all major payment methods to ensure a smooth, secure, and hassle-free transaction.</p>
+                        </div>
+                        
+                        <div class="flex flex-wrap justify-center items-center gap-4">
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(236,72,153,0.15)] hover:border-pink-500/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <span class="text-pink-500 font-extrabold italic text-xl tracking-wide">bKash</span>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(249,115,22,0.15)] hover:border-orange-500/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <span class="text-orange-500 font-bold text-xl tracking-wide">Nagad</span>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(168,85,247,0.15)] hover:border-purple-500/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <span class="text-purple-500 font-black italic text-xl tracking-wide">Rocket</span>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(234,179,8,0.15)] hover:border-yellow-500/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <span class="text-yellow-500 font-black text-xl tracking-wide">Upay</span>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(255,255,255,0.1)] hover:border-gray-400/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <span class="text-white font-black italic text-xl tracking-widest">UPI</span>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(192,132,252,0.15)] hover:border-purple-400/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <span class="text-purple-400 font-black text-xl tracking-wide">PhonePe</span>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(37,99,235,0.15)] hover:border-blue-500/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <i class="fa-brands fa-cc-visa text-blue-500 text-3xl"></i>
+                            </div>
+                            <div class="px-6 py-4 rounded-2xl bg-[#161e2c] border border-gray-700 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(220,38,38,0.15)] hover:border-red-500/50 transition-all duration-300 flex items-center justify-center min-w-[120px] cursor-default">
+                                <i class="fa-brands fa-cc-mastercard text-red-500 text-3xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    
+
+    <footer class="py-16 relative z-10 bg-[#0a0f1a] border-t border-gray-800 mt-10">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div class="col-span-1 md:col-span-2">
+<a href="/" class="flex items-center gap-3 text-lg font-bold text-white tracking-wide ml-2">
+    <img src="https://i.ibb.co.com/7xLYz5fp/vv.webp" alt="Sensi X" class="h-10 w-auto rounded-lg"> 
+    Sensi X
+</a>
+                    <p class="text-gray-400 text-sm max-w-sm mb-6">Your ultimate platform for premium digital tools, AI assets, and bypass panels. Level up your digital journey with us.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wider">Quick Links</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="/" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Home</a></li>
+                        <li><a href="/category/Premium Apps" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Panel Area</a></li>
+                        <li><a href="/category/FreeFire Items" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> PC Bypass</a></li>
+                        <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase text-sm tracking-wider">Legal & Support</h4>
+                    <ul class="space-y-2 text-gray-400 text-sm">
+                        <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-emerald-400 transition flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
+                <p>© 2026 <strong class="text-gray-300">Sensi X Services</strong>. All rights reserved.</p>
+                <div class="flex items-center gap-5 mt-4 md:mt-0 text-xl">
+                    <a href="https://discord.gg/wEMyBdUtKB" class="text-gray-500 hover:text-[#5865F2] transition"><i class="fa-brands fa-discord"></i></a>
+                    <a href="https://www.youtube.com/@sensi_xx" class="text-gray-500 hover:text-[#FF0000] transition"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-[#0088cc] transition"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="reviewModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <div class="bg-[#161e2c] border border-gray-700 rounded-3xl w-full max-w-lg p-8 relative shadow-2xl">
+            <button onclick="document.getElementById('reviewModal').classList.add('hidden')" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center text-gray-400 transition"><i class="fa-solid fa-xmark"></i></button>
+            <h3 class="text-2xl font-extrabold mb-2 text-white">Share Your Experience</h3>
+            <p class="text-sm text-gray-400 mb-6">Your feedback helps others!</p>
+            <form action="/add_review" method="POST">
+                <textarea name="review_text" rows="4" required placeholder="Write your honest review..." class="w-full px-4 py-3 rounded-xl bg-gray-900 border border-gray-700 focus:border-blue-500 text-white outline-none mb-6 resize-none transition"></textarea>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition">Post Review</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        const video = document.getElementById('bg-video');
-        const audioBtn = document.getElementById('audio-toggle');
-        const audioIcon = document.getElementById('audio-icon');
-
-        video.muted = true;
-
-        function toggleAudio() {
-            if (video.muted) {
-                video.muted = false;
-                audioIcon.className = "fa-solid fa-volume-high";
-                audioBtn.style.borderColor = "#00e5ff";
-                audioBtn.style.color = "#00e5ff";
-                audioBtn.style.boxShadow = "0 0 25px rgba(0, 229, 255, 0.8)";
-                video.play().catch(e => console.log("Audio play allowed"));
-            } else {
-                video.muted = true;
-                audioIcon.className = "fa-solid fa-volume-xmark";
-                audioBtn.style.borderColor = "#ff003c";
-                audioBtn.style.color = "#ff003c";
-                audioBtn.style.boxShadow = "0 0 15px rgba(255, 0, 60, 0.4)";
-            }
-        }
-
-        // ----------------------------------------------------
-        // FIREBASE UNIQUE VISITS ENGINE (1 PERSON = 1 VIEW)
-        // ----------------------------------------------------
-        const firebaseConfig = {
-            apiKey: "AIzaSyDUm0ZoK89NQ2XM09MpWtGaJ53jIKj-zPw",
-            authDomain: "killer-dashboard.firebaseapp.com",
-            databaseURL: "https://killer-dashboard-default-rtdb.firebaseio.com",
-            projectId: "killer-dashboard",
-            storageBucket: "killer-dashboard.firebasestorage.app",
-            messagingSenderId: "233972175214",
-            appId: "1:233972175214:web:cb21ba2ec70d062067f17f"
-        };
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            const db = firebase.database();
-            const totalRef = db.ref('stats/unique_visits');
-
-            if (!localStorage.getItem('nhe_dashboard_visited')) {
-                totalRef.transaction((currentValue) => {
-                    return (currentValue || 0) + 1;
-                });
-                localStorage.setItem('nhe_dashboard_visited', 'true');
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            const currencySelector = document.getElementById('currencySelector');
+            const priceElements = document.querySelectorAll('.price-display');
+            const rates = { 'BDT': { symbol: '৳', multiplier: 1 }, 'USDT': { symbol: '$', multiplier: 0.01 }, 'INR': { symbol: '₹', multiplier: 1 } };
             
-            totalRef.on('value', (snapshot) => {
-                document.getElementById('total-count').innerText = snapshot.val() || 0;
-            });
-        } catch (error) {
-            console.error("Firebase implementation error: ", error);
-            document.getElementById('total-count').innerText = "ERROR";
-        }
+            function updatePrices(currency) {
+                const rateInfo = rates[currency];
+                priceElements.forEach(el => {
+                    const basePriceStr = el.getAttribute('data-base-price');
+                    if(basePriceStr) {
+                        const basePrice = parseFloat(basePriceStr.replace(/,/g, ''));
+                        let convertedPrice = basePrice * rateInfo.multiplier;
+                        let formattedPrice = currency === 'USDT' 
+                            ? convertedPrice.toFixed(2) 
+                            : Math.round(convertedPrice).toLocaleString('en-IN');
+                        el.innerHTML = `${rateInfo.symbol}${formattedPrice}`;
+                    }
+                });
+            }
+
+            if (currencySelector) {
+                currencySelector.addEventListener('change', (e) => {
+                    updatePrices(e.target.value);
+                });
+            }
+        });
     </script>
+    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
+          appId: "8a802a23-4c30-46bd-8dab-3bc1d4c8d018", 
+        });
+
+        
+      });
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"e1c331c7d298464f82db94a70ee35e0e","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
